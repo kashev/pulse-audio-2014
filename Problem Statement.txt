@@ -1,0 +1,78 @@
+Problem Statement
+Hi All, 
+
+Your challenge is quite multi-fold! In this audio competition, you will build and design three related segments that will process some given audio sample and perform amplitude modulation (amplitude masking, volume changing, etc). If this sounds extremely vague, ask Aswin Sivaraman for a software demo. While the goal is to have all segments built, it will require a great variety of skill. Completing any one of the segments does qualify your submission for judging, so attempt whatever portion of the competition you know you can do! Feel free to ask questions! 
+
+Submission ranking will depend on the number of segments completed, but also the creativity and complexity of your design. Segments 1 and 3 offer some open-ended design aspects which will really allow you to make this into something extremely experimental and interesting! While getting the “right” sound is always good, getting the “unexpected” sound can be a lot more fun. It is at the judge’s discretion to award creativity and complexity points on a case by case basis. 
+
+Your parts include: 
+1 Op-Amp 
+A reasonable amount of resistors and capacitors as you need them 
+Electret Microphone and possibly a 3.5mm audio-jack 
+Oscilloscope, Function Generator, Wall Power Supply 
+1 Arduino UNO 
+A single 5 Watt 8 Ohm speaker (another speaker may be useable on request) 
+
+1st Segment: Preconditioning Input Audio for Processing 
+
+Given a real-time analog audio input (either through microphone or auxilary 3.5mm), some preconditioning must be done such that the Arduino UNO can detect it (check out: http://arduino.cc/en/Reference/analogRead). For this segment, you must use only analog components to make your input detectable by the Arduino UNO. In your documentation and submission, please provide a schematic diagram with circuit elements and values clearly labeled. Before submission, please demonstrate the functionality of your circuit to a proctor and if possible, append oscilloscope comparisons in your submission. 
+
+Fun fact: in the audio business, they call this a “Preamplifer” (or “preamp” for short)! 
+
+Tips: 
+(1) Your preconditioning of this signal will involve amplifying it, filtering it, and adding a voltage offset such that the range of your signal is between 0 and 5 volts. 
+(2) Low-pass filters: R before C High-pass filters: C before R Cut-off Freq = 1/(2πRC) 
+(3) Be sure to add a DC component to your signal (vertical offset) so that your output is non-negative 
+(4) Don’t forget to run lab equipment in “High Z” mode! Ask a proctor if you do not know how to do this. 
+(5) You can use the Arduino’s 5 volt output for Vcc, and use voltage divider to obtain Voffset. 
+(6) Try both microphone inputs and audio-jack inputs and check your waveforms on the oscilloscope before and after preconditioning. 
+(7) Try different gain parameters and see how this affects your output. Use the oscilloscope to check for clipping and distortion and aim to reduce that as much as possible! 
+(8) Use the serial monitor on the Arduino for testing and for demos! 
+
+2nd Segment: Down-sampling Audio Files to 8kHz and Storing in Flash Memory 
+
+Playback of audio via a real-time buffer on the Arduino UNO is possible, but excruciatingly difficult. To make things easier, we will be using a predetermined background loop to be stored in a Flash Memory buffer and then looped in tempo on the Arduino UNO. This will all be done on a computer, so pick your favorite programming language and IDE and get started! 1st Segment is not needed to complete 2nd Segment, but it may be useful to have finished it first. 
+
+1st - Select an audio loop provided by Aswin which you would like to be able to loop. Note the BPM. 
+2nd - Read the .wav file and store pure samples at the intended 44.1kHz sampling rate 
+Hint: The difficulty of this step may vary significantly depending on your programming language. 
+3rd - Downsample this audio loop to approximately 8kHz (plus or minus 500Hz accuracy is fine) 
+4th - Scale the sample values such that they are positive integer values between 0 and 255. Perform various plots to ensure the amplitude envelope is the same after scaling. 
+5th - Convert the sound from stereo to mono (reduce the dimensionality by omission or averaging) 
+6th - Notify a proctor to check that you have resampled the audio to a vector of length < 10,000 samples 
+
+Obtain the resampled audio as a very long single vector and place it correctly within the provided Arduino template code called “playback.ino”. Read the comments in the file about where the samples should be stored. 
+
+WITHOUT making any additional changes to “playback.ino”, compile the sketch and make sure that your loop can be heard directly using a speaker connected to Pin 11 on the Arduino UNO. An amplification and filtering circuit may be required for normal audible output to come from the 8-Ohm provided speakers. In the event that you do not build the amplification circuit, contact a proctor and ask for an alternate speaker. 
+
+For submission, demonstrate successful downsampled playback to a proctor, then include a brief explanation of the down-sampling process and attach relevant source code. 
+
+
+3rd Segment: Amplitude Modulation using Internal and External Sources 
+NOTE: Do not move on to Segment 3 without completing Segment 2 
+
+In the case of audio, multiplying two signals sample-by-sample will result in amplitude modulation. You can scale audio with values between 0 and 1 to shape the volume of the sound. Check out the “playback.ino” file and try to interpret exactly what is going on. 
+
+This Arduino sketch uses two internal timers. One of the timers is scaled down from the system clock (16MHz) to 8kHz, which is then used to read samples from a buffer in Flash Memory. The other timer controls the Pulse-Width Modulation (PWM) output on the Arduino pins such that the output matches the amplitude value denoted by the currently read sample. An interrupt function is called, and then the next sample is read. Once all the samples have been output, the interrupt resets the sample counter to zero, and the process repeats. 
+
+At some location (or perhaps multiple locations) in this code, you will be able to literally multiply the sample read with another value of your choice. Your goal is to modify the right areas of the “playback.ino” code in order to do this. To fully complete this segment, you must demonstrate modulation using two kinds of inputs: internal and external. 
+
+An internal input would be to create a time-varying function within the “playback.ino” file and use that to scale your audio sample. It is recommended that you do not use another buffer, but rather direct mathematical manipulation of your samples. This will provide better results! 
+
+An external input can be either a microphone or an analog potentiometer. Using an analogRead operation, you can then use this variable value to modulate the amplitude of your loop! 
+
+This segment is very experimental in nature, so you should aim to come up with some interesting or unique modulation of the original sound. 
+
+Tips: 
+(1) The electret microphones have a very marginal variation in amplitude. If you have designed a preamp as used in Segment 1, be sure to check your input and output levels using an oscilloscope. Again, here you must develop intuition on how much gain is necessary. 
+(2) The template file uses 8kHz as a sampling rate because the Arduino UNO’s flash memory buffer cannot handle much more than 10,000 samples. You are welcome to adjust the sampling rate if you want clearer audio, but you may have to re-do Segment 2. 
+(3) It is highly highly suggested that you read http://arduino.cc/en/Tutorial/SecretsOfArduinoPWM to understand what “playback.ino” is doing. You may want to familiarize yourself with the assembly programming techniques and register names used in the template code. 
+(4) The 8-Ohm speakers are not that great, so let out your inner Skrillex and feel free to create the most bizarre wobbles. 
+
+
+
+Congrats on making it this far and best of luck with your competition! Feel free to ask me any questions. 
+
+
+~ Aswin Sivaraman
+#pin
